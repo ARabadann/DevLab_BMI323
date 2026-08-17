@@ -250,7 +250,7 @@ public:
   /*
     Configure accelerometer and gyroscope
   */
-  bool configure();
+  void configure();
 
   void configureAccGyr(acc_cfg acc_Cfg, gyr_cfg gyr_Cfg);
 

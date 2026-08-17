@@ -82,16 +82,24 @@ DevLab_BMI323::DevLab_BMI323(SPIClass &spi, uint8_t csPin,uint8_t misoPin, uint8
 // --------------------------------------------------
 // Initialize interfaces and configure BMI323
 // --------------------------------------------------
-bool DevLab_BMI323::begin(uint8_t sdaPin, uint8_t sclPin, uint32_t clock) {
+bool DevLab_BMI323::begin(uint8_t sdaPin, uint8_t sclPin, uint32_t clock)
+{
   _wire->begin(sdaPin, sclPin);
   _wire->setClock(clock);
-
   delay(100);
 
   softReset();
   delay(100);
+  configure();
 
-  return configure();
+  // return configure();
+
+  uint16_t idRaw = readRegister16(REG_CHIP_ID);
+
+  // Serial.print(">> DEBUG I2C - CHIP ID RAW DEVUELTO: 0x");
+  // Serial.println(idRaw, HEX);
+
+  return ((idRaw & 0xFF) == BMI323_CHIP_ID);
 }
 
 bool DevLab_BMI323::begin() {
@@ -109,7 +117,7 @@ bool DevLab_BMI323::begin() {
 // --------------------------------------------------
 // Configure accelerometer and gyroscope
 // --------------------------------------------------
-bool DevLab_BMI323::configure() {
+void DevLab_BMI323::configure() {
   /*
     ACC_CONF = 0x708B
 
@@ -133,8 +141,6 @@ bool DevLab_BMI323::configure() {
   */
   writeRegister16(REG_GYR_CONF, 0x708B);
   delay(10);
-
-  return true;
 }
 
 void DevLab_BMI323::configureAccGyr(acc_cfg acc_Cfg, gyr_cfg gyr_Cfg){
